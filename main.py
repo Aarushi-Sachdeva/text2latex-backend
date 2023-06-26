@@ -12,12 +12,8 @@ load_dotenv()
 # access env vairables
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-question = input("Write math text as if you were speaking it : ")
-prefix = "Turn the following into latex: "
-prompt = prefix + question
 
-
-@app.route('/openai/api', methods=['POST'])
+@app.route('/', methods=['POST'])
 def openai_api():
     data = request.get_json()
 
@@ -32,4 +28,11 @@ def openai_api():
         temperature=0,
     )
 
-    print(response["choices"][0]["message"]["content"])
+    # generated_text = response.json().get('generated_text')
+
+    # Return the generated text as JSON response
+    return response
+
+
+if __name__ == "__main__":
+    app.run()
