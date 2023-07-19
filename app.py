@@ -17,12 +17,14 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 def openai_api():
     data = request.get_json()
 
-    prompt = data.get('prompt')
+    PREFIX = "turn the following into latex code: "
+
+    prompt = PREFIX + data.get('prompt')
     MODEL = "gpt-3.5-turbo"
     response = openai.ChatCompletion.create(
         model=MODEL,
         messages=[
-            {"role": "system", "content": "you are an engine that converts natural langauge into latex code"},
+            {"role": "system", "content": ""},
             {"role": "user", "content": prompt}
         ],
         temperature=0,
@@ -31,7 +33,7 @@ def openai_api():
     # generated_text = response.json().get('generated_text')
 
     # Return the generated text as JSON response
-    return response
+    return response['choices'][0]['message']['content']
 
 
 if __name__ == "__main__":
