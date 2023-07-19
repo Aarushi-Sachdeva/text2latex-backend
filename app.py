@@ -22,7 +22,7 @@ def openai_api():
     response = openai.ChatCompletion.create(
         model=MODEL,
         messages=[
-            {"role": "system", "content": "you are"},
+            {"role": "system", "content": "you are an engine that converts natural langauge into latex code"},
             {"role": "user", "content": prompt}
         ],
         temperature=0,
