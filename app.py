@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import openai
 from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
+limiter = Limiter(app)
 
 
 # load env variables from .env file
@@ -14,6 +17,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 @app.route('/', methods=['POST'])
+@limiter.limit("15 per minute")
 def openai_api():
 
     # user prompt
@@ -22,7 +26,7 @@ def openai_api():
     # input validation
     if not data or 'prompt' not in data or not data['prompt']:
         return jsonify(error="Missing Prompt."), 400
-    elif type(data['prompt']) != "str":
+    elif type(data['prompt']) != str:
         return jsonify(error="Prompt must be a string"), 400
     elif len(data['prompt']) > 1000:
         return jsonify(error="Prompt must be less than 1000 characters"), 400
