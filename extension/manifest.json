@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "text2latex",
+  "version": "1.0.0",
+  "author": "Aarushi Sachdeva",
+  "description": "turn natural lanauge into latex code with no hassle",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "text2latex"
+  }
+}
