@@ -4,8 +4,20 @@
   "version": "1.0.0",
   "author": "Aarushi Sachdeva",
   "description": "turn natural lanauge into latex code with no hassle",
-  "action": {
-    "default_popup": "index.html",
-    "default_title": "text2latex"
-  }
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": [
+    {
+      "default_popup": "index.html",
+      "default_title": "text2latex"
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://overleaf.com/project/*"],
+      "js": ["contentScript.js"]
+    }
+  ]
 }
