@@ -51,7 +51,7 @@ def openai_api():
         # generated_text = response.json().get('generated_text')
 
         # Return the generated text as JSON response
-        return response['choices'][0]['message']['content']
+        return {response: response['choices'][0]['message']['content']}
     except Exception as e:
         return jsonify(error="An error occurred while communicating with the OpenAI API."), 500
 
