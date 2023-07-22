@@ -1,19 +1,7 @@
-
-
 console.log("contentScript.js has been injected")
 
-// chrome.runtime.onMessage.addListener(
-//     function(message,sender,sendResponse){
-//         console.log(message.type)
-//     }
-// );
-
-// message = {text:"hello from content"};
-// chrome.runtime.sendMessage(message);
-
-
-
 var currentLine= "";
+var last_element = null;
 // let url = 'http://127.0.0.1:5000';
 
 
@@ -32,6 +20,7 @@ document.addEventListener('click', function(event) {
         //console.log(element.textContent);
         if (element.textContent.match(init)){
             currentLine = element.textContent.match(init)[1].trim();
+            last_element = element;
             console.log(currentLine)
         }
         else{
@@ -47,38 +36,26 @@ document.addEventListener('click', function(event) {
 
 document.addEventListener('keydown', function(event) {
     // Key code for the 'Enter' button is 13
-    if(event.key == "Enter") {
+    if(event.key == "Enter" && chrome.runtime) {
         console.log('Enter key pressed!', currentLine);
         chrome.runtime.sendMessage({"data": currentLine});
-
-        // Here, you can insert the code that should be triggered when 'Enter' is pressed
-        // if (currentLine){
-        //     var data = {
-        //         "prompt": currentLine
-        //      };
-
-        //     postPrompt(url,data)
-        //         .then(data =>{console.log('success:', data)})
-        //         .catch((error)=>{console.error('error',error)})
-        // }
     }
 });
 
-// function postPrompt(url = '', data = {}){
-//     return fetch (url, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(data)
-//     })
-//     .then(response => {
-//         if(!response.ok){
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();
-//     })
-// }
+chrome.runtime.onMessage.addListener(
+    function(message, sender, sendResponse) {
+        // replace the textContent in the "last_element" with message.data
+        if (message.data && last_element && chrome.runtime){
+            last_element.textContent = message.data;
+        }   
+        else{
+            console.log("issues")
+        }
+
+    }
+);
+
+
 
 
 
