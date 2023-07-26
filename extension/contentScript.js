@@ -55,12 +55,12 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.action === "toggleSidebar") {
-      let sidebar = document.getElementById('myExtensionSidebar');
-      sidebar.style.display = (sidebar.style.display === 'none') ? 'block' : 'none';
-    }
-  });
+// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+//     if (request.action === "toggleSidebar") {
+//       let sidebar = document.getElementById('myExtensionSidebar');
+//       sidebar.style.display = (sidebar.style.display === 'none') ? 'block' : 'none';
+//     }
+//   });
   
 
 
