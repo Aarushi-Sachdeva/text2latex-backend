@@ -10,7 +10,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "index.html",
+    "default_popup": "popup.html",
     "default_title": "text2latex"
   },
   "content_scripts": [
