@@ -34,6 +34,9 @@ def openai_api():
     elif len(data['prompt']) > 1000:
         return jsonify(error="Prompt must be less than 1000 characters"), 400
 
+    CONTENT = ""
+    PREFIX = ""
+    prompt = ""
     if data["type"] == "latex":
         CONTENT = "answer each question with the correct latex code, and no other text"
         PREFIX = "turn the following into latex code: "
