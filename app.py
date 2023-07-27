@@ -42,7 +42,7 @@ def openai_api():
         PREFIX = "turn the following into latex code: "
         prompt = PREFIX + data.get('prompt')
     elif data["type"] == "question":
-        CONTENT = "answer the following question about latex to the best of your ability"
+        CONTENT = "you are a latex assistant, when asked a question, answer it within the context of latex"
         PREFIX = "answer the following question: "
         prompt = PREFIX + data.get('prompt')
 
