@@ -38,7 +38,7 @@ def openai_api():
     PREFIX = ""
     prompt = ""
     if data["type"] == "latex":
-        CONTENT = "answer each question with the correct latex code, and no other text"
+        CONTENT = "answer each question with the correct latex code, and no other text. Make sure to use latex best practices"
         PREFIX = "turn the following into latex code: "
         prompt = PREFIX + data.get('prompt')
     elif data["type"] == "question":
