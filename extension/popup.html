@@ -1,36 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang ="en" dir="ltr"> 
   <head>
-    <style>
-      body {
-        width: 300px;
-        height: 200px;
-        margin: 0;
-        padding: 10px;
-        font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-        border-radius: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      }
-      #header {
-        font-size: 18px;
-        margin-bottom: 10px;
-      }
-      #search-input {
-        width: 100%;
-        padding: 5px;
-        margin-bottom: 10px;
-      }
-      #submit-button {
-        padding: 5px 10px;
-      }
-    </style>
+    <meta charset="utf-8">
+    <title>T2L Assistant</title>
+    <link rel="stylesheet" href="popup.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+    
   </head>
   <body>
-    <div id="header">Quick search up for LaTeX syntax:</div>
-    <input type="text" id="search-input" />
-    <button id="submit-button">Submit</button>
-      <div id="output"></div>
-    <script src="popup.js"></script>
+    <div class="chatbot">
+      <header>
+        <h2>T2L Assistant</h2>
+      </header>
+      <ul class="chatbox">
+        <li class = "chat incoming">
+          <span class = "material-symbols-outlined">smart_toy</span>
+          <p>Hi there! <br> ask me any questions you have relating to LaTex</p>
+        </li>
+        <li class = "chat outgoing">
+          <p>Lorem ipsum dolor sit amet </p>
+        </li>
+      </ul>
+
+      <div class="chat-input">
+        <textarea placeholder="type your question here..."></textarea>
+        <span id="send-btn" class="material-symbols-outlined">send</span>
+      </div>
+
+    </div>
+
   </body>
 </html>
+
+
+
