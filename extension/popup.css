@@ -6,7 +6,6 @@
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
 }
-
 .chatbox {
     list-style: none;
     margin: 0;
@@ -20,7 +19,6 @@
     box-shadow: 0 0 128px 0 rgba(0,0,0,0.1),
                 0 32px 64px -48px rgba(0,0,0,0.5);
 }
-
 .chatbot header {
     padding: 16px 0;
     text-align: center;
