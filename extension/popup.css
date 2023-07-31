@@ -25,11 +25,21 @@
     padding: 16px 0;
     text-align: center;
     background: #724ae8;
+    position: relative;
 }
 
 .chatbot header h2 {
     color: #fff;
     font-size: 1.4rem;
+}
+
+.chatbot header span{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
 }
 
 .chatbox .chat {
@@ -74,4 +84,41 @@
     padding: 12px 16px;
     max-width: 75%;
     font-size: 0.95rem;
+}
+
+.chatbot .chat-input {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    gap: 5px;
+    background: #fff;
+    padding: 5px 20px;
+    border-top: 1px solid #ccc;
+
+}
+
+.chat-input textarea{
+    height: 55px;
+    width:100%;
+    border: none;
+    outline:none;
+    font-size:0.95 rem;
+    resize:none;
+    padding: 16px 15px 16px 0;
+}
+
+.chat-input span {
+    align-self: flex-end;
+    height:55px;
+    line-height: 55px;
+    color: #724ae8;
+    font-size: 1.35rem;
+    cursor: pointer;
+    visibility: hidden;
+
+}
+
+.chat-input textarea:valid ~ span {
+    visibility: visible;
 }
