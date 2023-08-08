@@ -61,6 +61,44 @@
     margin-bottom: 20px;
 }
 
+.chatbox .incoming .code-container {
+    position: relative;
+}
+
+.chatbox .incoming .code-block {
+    font-family: 'Courier New', monospace;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    white-space: pre;
+    overflow-x: auto;
+    color: #333;
+}
+
+.chatbox .incoming .copy-code-btn {
+    cursor: pointer;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+}
+
+.chatbox .incoming .copy-code-btn .material-icons-outlined {
+    font-size: 1rem;
+}
+
+.chatbox .incoming .copy-code-btn:hover {
+    opacity: 1;
+}
+
 .chatbox .incoming span {
     height: 32px;
     width: 32px;
@@ -75,9 +113,9 @@
 .chatbox .incoming p {
     color: #000;
     background: #f2f2f2;
-    border-radius: 10px 10px 10px 0;
+    border-radius: 0px 10px 10px 10px;
     padding: 12px 16px;
-    max-width: 75%;
+    max-width: 90%;
     font-size: 0.95rem;
 }
 

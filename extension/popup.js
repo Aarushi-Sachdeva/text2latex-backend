@@ -1,6 +1,25 @@
 
 let url = 'https://text2latex.onrender.com/';
 
+async function copyCode(buttonElement) {
+  const codeBlock = buttonElement.previousElementSibling; // The <pre> element containing the code
+  const codeText = codeBlock.textContent;
+
+  // // Find the first line break and get all content after it
+  // const codeToCopy = codeText.indexOf('\n') >= 0 ? codeText.slice(codeText.indexOf('\n') + 1) : codeText;
+
+  try {
+      await navigator.clipboard.writeText(codeText);
+      alert('Code copied to clipboard!'); // Optional: Provide feedback that the code was copied
+  } catch (err) {
+      console.error('Failed to copy text: ', err);
+  }
+}
+
+
+
+
+
 function postPrompt(url = '', data = {},incomingChatLi){
     const messageElement = incomingChatLi.querySelector("p");
     return fetch (url, {
@@ -21,10 +40,35 @@ function postPrompt(url = '', data = {},incomingChatLi){
             // throw new Error('Network response was not ok');
         }
         return response.json();
-    }).then(data => {
-      messageElement.textContent = data['response'];
-      return data;
-    }).catch(error => {
+      })
+      .then(data => {
+          let responseText = data['response'];
+      
+          // Splitting the response into parts by triple quotes
+          // Code that handles the incoming message and parses the triple quotes
+      
+          const codeBlocks = responseText.split('```');
+          // Get the paragraph element inside the incomingChatLi
+          const messageElement = incomingChatLi.querySelector('p');
+          let formattedMessage = '';
+
+          for (let i = 0; i < codeBlocks.length; i++) {
+            if (i % 2 === 0) {
+              formattedMessage += codeBlocks[i]; // Normal text
+            } else {
+              // Code block
+              formattedMessage += `<div class="code-container"><pre class="code-block">${codeBlocks[i]}</pre><button class="copy-code-btn"><span class="material-icons-outlined">content_copy</span></button></div>`;
+            }
+          }
+
+          messageElement.innerHTML = formattedMessage; // Insert the formatted message into the paragraph
+          return data;
+      })
+    // }).then(data => {
+    //   messageElement.textContent = data['response'];
+    //   return data;
+    //})
+    .catch(error => {
       messageElement.classList.add("error");
       messageElement.textContent = "Oops! Something went wrong. Please try again.";
     }).finally(() => {
