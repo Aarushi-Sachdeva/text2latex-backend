@@ -16,6 +16,28 @@ async function copyCode(buttonElement) {
   }
 }
 
+function storeMessage(message, type) {
+  chrome.storage.local.get("chatHistory", function(result) {
+      let chatHistory = result.chatHistory || [];
+
+      chatHistory.push({ type, message });
+      chrome.storage.local.set({ "chatHistory": chatHistory });
+  });
+}
+
+
+function loadChatHistory() {
+  chrome.storage.local.get("chatHistory", function(result) {
+      const chatHistory = result.chatHistory;
+      if (chatHistory) {
+          for (const chat of chatHistory) {
+              const chatLi = createChatLi(chat.message, chat.type);
+              chatbox.appendChild(chatLi);
+          }
+      }
+  });
+}
+
 
 
 
@@ -107,7 +129,8 @@ const handleChat = () => {
 
 
   // append the user's message to the chatbox
-  chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+  storeMessage(userMessage, "outgoing");
+  chatbox.appendChild(createChatLi(userMessage, 'outgoing'));
   chatbox.scrollTo(0,chatbox.scrollHeight);
   setTimeout(() => {
     //display "thinking...." message while waiting fr the response
@@ -115,6 +138,9 @@ const handleChat = () => {
     chatbox.appendChild(incomingChatLi);
     chatbox.scrollTo(0,chatbox.scrollHeight);
     postPrompt(url, {"type": "question", "prompt": userMessage},incomingChatLi)
+    .then(data => {
+      storeMessage(data['response'], "incoming");
+    })
   },600);
 };
 
@@ -134,4 +160,5 @@ chatInput.addEventListener("input", () => {
   chatInput.style.height = `${inputInitHeight}px`;
   chatInput.style.height = `${chatInput.scrollHeight}px`;
 });
+loadChatHistory();
 

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "Aarushi Sachdeva",
   "description": "turn natural lanauge into latex code with no hassle",
-  "permissions": ["activeTab", "tabs"],
+  "permissions": ["activeTab", "tabs", "storage"],
   "host_permissions": ["https://www.overleaf.com/project/*"],
   "background": {
     "service_worker": "background.js"

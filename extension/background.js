@@ -1,5 +1,12 @@
 let url = 'https://text2latex.onrender.com/';
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.url) {
+        if (tab.url.includes("https://www.overleaf.com/project/")) {
+          chrome.action.enable(tabId);
+        } else {
+          chrome.action.disable(tabId);
+        }
+      }
     if(changeInfo.status === 'complete' && tab.url && tab.url.includes("overleaf.com/project/")) {
         console.log("in overleaf");
      }
