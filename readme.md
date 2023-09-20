@@ -2,8 +2,7 @@
 
 LaTeX Assistant is a Chrome extension designed to help users generate LaTeX code through a chat interface. It connects to a backend server, where user input is processed and the corresponding LaTeX code is provided.
 
-![Demo Image 1](path_to_image1.jpg)
-![Demo Image 2](path_to_image2.jpg)
+<img width="411" alt="Screenshot 2023-09-20 at 6 15 20 PM" src="https://github.com/Aarushi-Sachdeva/text2latex-backend/assets/101431006/24273f1e-dcac-46bd-b21c-a111fc8719f5">
 
 ## Features
 
