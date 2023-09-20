@@ -1,13 +1,13 @@
 let url = "https://text2latex.onrender.com/";
 
 async function copyCode(buttonElement) {
+  console.log("copying code");
   const codeBlock =
     buttonElement.parentElement.nextElementSibling.querySelector(".code-block");
   const codeText = codeBlock.textContent;
 
   try {
     await navigator.clipboard.writeText(codeText);
-    alert("Code copied to clipboard!");
   } catch (err) {
     console.error("Failed to copy text: ", err);
   }
@@ -27,7 +27,7 @@ function formatMessage(message) {
     const codeHTML = `
    <div class="code-block-container">
       <div class="code-header">${language}
-      <span class="copy-code-btn">Copy</span></div>
+      <span class="copy-code-btn code-copy-trigger">Copy</span></div>
       
       <div class="code-container">
          <pre class="code-block">${codeContent}</pre>
@@ -58,6 +58,11 @@ function loadChatHistory() {
         chatbox.appendChild(chatLi);
       }
     }
+    document.querySelectorAll(".code-copy-trigger").forEach((button) => {
+      button.addEventListener("click", function () {
+        copyCode(this);
+      });
+    });
   });
 }
 
