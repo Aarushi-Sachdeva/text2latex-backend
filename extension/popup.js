@@ -1,170 +1,176 @@
-let url = "https://text2latex.onrender.com/";
+// Constants
+const CHAT_URL = "https://text2latex.onrender.com/";
 
-async function copyCode(buttonElement) {
-  console.log("copying code");
+// Elements
+const chatInput = document.querySelector(".chat-input textarea");
+const sendChatBtn = document.querySelector(".chat-input span");
+const chatbox = document.querySelector(".chatbox");
+const closeChatBtn = document.querySelector(".chatbot header span");
+const inputInitialHeight = chatInput.scrollHeight;
+
+/**
+ * Copies the content of a code block to clipboard.
+ * @param {HTMLElement} buttonElement - The button triggering the copy action.
+ */
+async function copyCodeToClipboard(buttonElement) {
   const codeBlock =
     buttonElement.parentElement.nextElementSibling.querySelector(".code-block");
-  const codeText = codeBlock.textContent;
+  const codeContent = codeBlock.textContent;
 
   try {
-    await navigator.clipboard.writeText(codeText);
-  } catch (err) {
-    console.error("Failed to copy text: ", err);
+    await navigator.clipboard.writeText(codeContent);
+  } catch (error) {
+    console.error("Failed to copy text: ", error);
   }
 }
 
-function formatMessage(message) {
-  let formattedMessage = message;
-
-  // Match the content inside triple backticks and format it
+/**
+ * Formats a message, converting code blocks to HTML.
+ * @param {string} message - The message to format.
+ * @returns {string} - The formatted message.
+ */
+function formatMessageContent(message) {
   const codeRegex = /```(\w+)?\n?([\s\S]*?)```/g;
-
-  let match;
-
-  while ((match = codeRegex.exec(message)) !== null) {
-    const language = match[1] || "plaintext";
-    const codeContent = match[2].trim();
-    const codeHTML = `
-   <div class="code-block-container">
-      <div class="code-header">${language}
-      <span class="copy-code-btn code-copy-trigger">Copy</span></div>
-      
-      <div class="code-container">
-         <pre class="code-block">${codeContent}</pre>
-         
-      </div>
-   </div>`;
-
-    formattedMessage = formattedMessage.replace(match[0], codeHTML);
-  }
-  return formattedMessage;
+  return message.replace(
+    codeRegex,
+    (_, language = "plaintext", code) => `
+        <div class="code-block-container">
+            <div class="code-header">${language}
+                <span class="copy-code-btn code-copy-trigger">Copy</span>
+            </div>
+            <div class="code-container">
+                <pre class="code-block">${code.trim()}</pre>
+            </div>
+        </div>
+    `
+  );
 }
 
-function storeMessage(message, type) {
-  chrome.storage.local.get("chatHistory", function (result) {
-    let chatHistory = result.chatHistory || [];
-
+/**
+ * Saves a message to local storage.
+ * @param {string} message - The message content.
+ * @param {string} type - The message type (e.g., "incoming", "outgoing").
+ */
+function saveMessageToHistory(message, type) {
+  chrome.storage.local.get("chatHistory", (result) => {
+    const chatHistory = result.chatHistory || [];
     chatHistory.push({ type, message });
-    chrome.storage.local.set({ chatHistory: chatHistory });
+    chrome.storage.local.set({ chatHistory });
   });
 }
 
-function loadChatHistory() {
-  chrome.storage.local.get("chatHistory", function (result) {
-    const chatHistory = result.chatHistory;
-    if (chatHistory) {
-      for (const chat of chatHistory) {
-        const chatLi = createChatLi(chat.message, chat.type);
-        chatbox.appendChild(chatLi);
-      }
-    }
+/**
+ * Loads chat history from local storage and populates the chatbox.
+ */
+function displayChatHistory() {
+  chrome.storage.local.get("chatHistory", (result) => {
+    const chatHistory = result.chatHistory || [];
+    chatHistory.forEach((chat) => {
+      const chatElement = createChatElement(chat.message, chat.type);
+      chatbox.appendChild(chatElement);
+    });
+    // Attach copy event listeners to all code copy triggers
     document.querySelectorAll(".code-copy-trigger").forEach((button) => {
-      button.addEventListener("click", function () {
-        copyCode(this);
-      });
+      button.addEventListener("click", () => copyCodeToClipboard(button));
     });
   });
 }
 
-function postPrompt(url = "", data = {}, incomingChatLi) {
-  const messageElement = incomingChatLi.querySelector("p");
+/**
+ * Sends a message to the chatbot server and updates the chatbox with the response.
+ * @param {string} url - The endpoint URL.
+ * @param {Object} data - The data to send.
+ * @param {HTMLElement} incomingChatElement - The chat element to update.
+ * @returns {Promise<Object>} - The response data.
+ */
+function sendMessageToBot(url, data, incomingChatElement) {
+  const messageElement = incomingChatElement.querySelector("p");
 
   return fetch(url, {
     method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
     .then((response) => {
       if (!response.ok) {
-        messageElement.classList.add("error");
-        messageElement.textContent =
-          "Oops! Something went wrong. Please try again.";
+        throw new Error("Server error");
       }
       return response.json();
     })
     .then((data) => {
-      let responseText = data["response"];
-
-      let formattedMessage = formatMessage(responseText);
-
+      const formattedMessage = formatMessageContent(data.response);
       messageElement.innerHTML = formattedMessage;
       return data;
     })
-    .catch((error) => {
+    .catch(() => {
       messageElement.classList.add("error");
       messageElement.textContent =
         "Oops! Something went wrong. Please try again.";
     })
     .finally(() => {
-      chatbox.scrollTo(0, chatbox.scrollHeight);
+      chatbox.scrollTop = chatbox.scrollHeight;
     });
 }
 
-const chatInput = document.querySelector(".chat-input textarea");
-const sendChatBtn = document.querySelector(".chat-input span");
-const chatbox = document.querySelector(".chatbox");
-const closeChatBtn = document.querySelector(".chatbot header span");
-
-let userMessage;
-const inputInitHeight = chatInput.scrollHeight;
-
-const createChatLi = (message, className) => {
-  //create a chat <li> element with passed message and className
-  const chatLi = document.createElement("li");
-  chatLi.classList.add("chat", className);
-
-  let chatContent =
+/**
+ * Creates a chat list item element.
+ * @param {string} message - The chat message.
+ * @param {string} className - The additional class for the list item.
+ * @returns {HTMLElement} - The chat list item element.
+ */
+function createChatElement(message, className) {
+  const chatElement = document.createElement("li");
+  chatElement.classList.add("chat", className);
+  const chatTemplate =
     className === "outgoing"
-      ? `<p>$</p>`
-      : `<span class="material-symbols-outlined">smart_toy</span><p>$</p>`;
-  chatLi.innerHTML = chatContent;
-  chatLi.querySelector("p").innerHTML = formatMessage(message);
-  return chatLi;
-};
+      ? `<p></p>`
+      : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
+  chatElement.innerHTML = chatTemplate;
+  chatElement.querySelector("p").innerHTML = formatMessageContent(message);
+  return chatElement;
+}
 
-const handleChat = () => {
-  userMessage = chatInput.value.trim();
+/**
+ * Handles the chat input and communication with the bot.
+ */
+function handleChatInput() {
+  const userMessage = chatInput.value.trim();
   if (!userMessage) return;
   chatInput.value = "";
-  chatInput.style.height = `${inputInitHeight}px`;
+  chatInput.style.height = `${inputInitialHeight}px`;
 
-  // append the user's message to the chatbox
-  storeMessage(userMessage, "outgoing");
-  chatbox.appendChild(createChatLi(userMessage, "outgoing"));
-  chatbox.scrollTo(0, chatbox.scrollHeight);
+  saveMessageToHistory(userMessage, "outgoing");
+  chatbox.appendChild(createChatElement(userMessage, "outgoing"));
+  chatbox.scrollTop = chatbox.scrollHeight;
+
   setTimeout(() => {
-    //display "thinking...." message while waiting fr the response
-    const incomingChatLi = createChatLi("Thinking....", "incoming");
-    chatbox.appendChild(incomingChatLi);
-    chatbox.scrollTo(0, chatbox.scrollHeight);
-    postPrompt(
-      url,
+    const incomingChatElement = createChatElement("Thinking....", "incoming");
+    chatbox.appendChild(incomingChatElement);
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    sendMessageToBot(
+      CHAT_URL,
       { type: "question", prompt: userMessage },
-      incomingChatLi
+      incomingChatElement
     ).then((data) => {
-      storeMessage(data["response"], "incoming");
+      saveMessageToHistory(data.response, "incoming");
     });
   }, 600);
-};
+}
 
-sendChatBtn.addEventListener("click", handleChat);
-
-chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 400) {
-    e.preventDefault();
-    handleChat();
+// Event Listeners
+sendChatBtn.addEventListener("click", handleChatInput);
+chatInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey && window.innerWidth > 400) {
+    event.preventDefault();
+    handleChatInput();
   }
 });
-
-closeChatBtn.addEventListener("click", () => {
-  window.close();
-});
+closeChatBtn.addEventListener("click", () => window.close());
 chatInput.addEventListener("input", () => {
-  //adjust the height of the input textarea based on the scrollheight
-  chatInput.style.height = `${inputInitHeight}px`;
+  chatInput.style.height = `${inputInitialHeight}px`;
   chatInput.style.height = `${chatInput.scrollHeight}px`;
 });
-loadChatHistory();
+
+// Initial Load
+displayChatHistory();
